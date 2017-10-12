@@ -75,6 +75,7 @@ Ext.define('GeoExt.data.model.LayerTreeNode', {
         if (layer instanceof ol.layer.Base) {
             this.set('checked', layer.get('visible'));
             layer.on('change:visible', this.onLayerVisibleChange, this);
+            layer.on('change:filtered', this.onLayerFilteredChange, this);
         }
     },
 
@@ -88,6 +89,15 @@ Ext.define('GeoExt.data.model.LayerTreeNode', {
 
         if (!this.__updating) {
             this.set('checked', target.get('visible'));
+        }
+    },
+
+    onLayerFilteredChange: function(evt) {
+        var layer = evt.target;
+        if(layer.get('filtered')){
+          this.set('text', '<b><i>' + layer.get(this.textProperty) + '</i></b>');
+        }else{
+          this.set('text', layer.get(this.textProperty));
         }
     },
 

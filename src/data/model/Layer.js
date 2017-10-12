@@ -92,6 +92,9 @@ Ext.define('GeoExt.data.model.Layer', {
                         : record.unnamedLayerText);
                     name = record.getOlLayerProp(textProp, defaultName);
                 }
+                if(record.get('filtered')){
+                  name = '<b><i>' + name + '</i></b>';
+                }
 
                 return name;
             }
