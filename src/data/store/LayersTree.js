@@ -308,44 +308,48 @@ Ext.define('GeoExt.data.store.LayersTree', {
      */
     addLayerNode: function(layerOrGroup) {
         var me = this;
-        // 2. get group to which the layer was added
-        var group = GeoExt.util.Layer.findParentGroup(
-            layerOrGroup, me.getLayerGroup()
-        );
+        //show only layer groups (folders) or tile layers in tree
+        if (layerOrGroup instanceof ol.layer.Group || layerOrGroup instanceof ol.layer.Tile){
 
-        // 3. get index of layer in that group
-        var layerIdx = GeoExt.util.Layer.getLayerIndex(layerOrGroup, group);
+          // 2. get group to which the layer was added
+          var group = GeoExt.util.Layer.findParentGroup(
+              layerOrGroup, me.getLayerGroup()
+          );
 
-        // 3.1 the index must probably be changed because of inverseLayerOrder
-        // TODO Check
-        if (me.inverseLayerOrder) {
-            var totalInGroup = group.getLayers().getLength();
-            layerIdx = totalInGroup - layerIdx - 1;
-        }
+          // 3. get index of layer in that group
+          var layerIdx = GeoExt.util.Layer.getLayerIndex(layerOrGroup, group);
 
-        // 4. find the node that represents the group
-        var parentNode;
-        if (group === me.getLayerGroup()) {
-            parentNode = me.getRootNode();
-        } else {
-            parentNode = me.getRootNode().findChildBy(function(candidate) {
-                return candidate.getOlLayer() === group;
-            }, me, true);
-        }
-        if (!parentNode) {
-            return;
-        }
+          // 3.1 the index must probably be changed because of inverseLayerOrder
+          // TODO Check
+          if (me.inverseLayerOrder) {
+              var totalInGroup = group.getLayers().getLength();
+              layerIdx = totalInGroup - layerIdx - 1;
+          }
 
-        // 5. insert a new layer node at the specified index to that node
-        var layerNode = parentNode.insertChild(layerIdx, layerOrGroup);
+          // 4. find the node that represents the group
+          var parentNode;
+          if (group === me.getLayerGroup()) {
+              parentNode = me.getRootNode();
+          } else {
+              parentNode = me.getRootNode().findChildBy(function(candidate) {
+                  return candidate.getOlLayer() === group;
+              }, me, true);
+          }
+          if (!parentNode) {
+              return;
+          }
 
-        if (layerOrGroup instanceof ol.layer.Group) {
-            // See onBeforeGroupNodeToggle for an explanation why we have this
-            layerNode.on('beforeexpand', me.onBeforeGroupNodeToggle, me);
-            layerNode.on('beforecollapse', me.onBeforeGroupNodeToggle, me);
+          // 5. insert a new layer node at the specified index to that node
+          var layerNode = parentNode.insertChild(layerIdx, layerOrGroup);
 
-            var childLayers = layerOrGroup.getLayers().getArray();
-            Ext.each(childLayers, me.addLayerNode, me, me.inverseLayerOrder);
+          if (layerOrGroup instanceof ol.layer.Group) {
+              // See onBeforeGroupNodeToggle for an explanation why we have this
+              layerNode.on('beforeexpand', me.onBeforeGroupNodeToggle, me);
+              layerNode.on('beforecollapse', me.onBeforeGroupNodeToggle, me);
+
+              var childLayers = layerOrGroup.getLayers().getArray();
+              Ext.each(childLayers, me.addLayerNode, me, me.inverseLayerOrder);
+          }
         }
     },
 
