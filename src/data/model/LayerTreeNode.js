@@ -77,6 +77,9 @@ Ext.define('GeoExt.data.model.LayerTreeNode', {
             layer.on('change:visible', this.onLayerVisibleChange, this);
             layer.on('change:filtered', this.onLayerFilteredChange, this);
         }
+        if (layer instanceof ol.layer.Group && layer.get('expanded') === true) {
+            this.set('expanded', true);
+        }
     },
 
     /**
