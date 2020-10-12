@@ -116,10 +116,10 @@ Ext.define('GeoExt.data.store.Layers', {
         });
 
         mapLayers.forEach(function(layer) {
-            layer.on('propertychange', me.onChangeLayer, me);
+            layer.on('propertychange', me.onChangeLayer.bind(me));
         });
-        mapLayers.on('add', me.onAddLayer, me);
-        mapLayers.on('remove', me.onRemoveLayer, me);
+        mapLayers.on('add', me.onAddLayer.bind(me));
+        mapLayers.on('remove', me.onRemoveLayer.bind(me));
 
         me.on({
             'load': me.onLoad,
@@ -227,7 +227,7 @@ Ext.define('GeoExt.data.store.Layers', {
         var layer = evt.element;
         var index = this.layers.getArray().indexOf(layer);
         var me = this;
-        layer.on('propertychange', me.onChangeLayer, me);
+        layer.on('propertychange', me.onChangeLayer.bind(me));
         if (!me._adding) {
             me._adding = true;
             var result = me.proxy.reader.read(layer);
@@ -283,7 +283,7 @@ Ext.define('GeoExt.data.store.Layers', {
                 var layers = new Array(len);
                 for (var i = 0; i < len; i++) {
                     layers[i] = records[i].getOlLayer();
-                    layers[i].on('propertychange', me.onChangeLayer, me);
+                    layers[i].on('propertychange', me.onChangeLayer.bind(me));
                 }
                 me._adding = true;
                 me.layers.extend(layers);
@@ -325,7 +325,7 @@ Ext.define('GeoExt.data.store.Layers', {
             var layer;
             for (var i = 0, ii = records.length; i < ii; ++i) {
                 layer = records[i].getOlLayer();
-                layer.on('propertychange', me.onChangeLayer, me);
+                layer.on('propertychange', me.onChangeLayer.bind(me));
                 if (index === 0) {
                     me.layers.push(layer);
                 } else {
